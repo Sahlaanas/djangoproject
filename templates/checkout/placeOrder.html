@@ -1,0 +1,105 @@
+{% extends 'user_home/base.html'%}
+{% load static %}
+{% block title %}
+Confirm order
+{% endblock %}
+{% block headlink %}
+  <link rel="stylesheet" href="{% static 'assetUser/css/price_rangs.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- style CSS -->
+{% endblock %}
+
+{% block content %}
+
+{% include 'includes/navbar.html' %}
+
+  <!--================Home Banner Area =================-->
+  <!-- breadcrumb start-->
+  <section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="breadcrumb_iner">
+            <div class="breadcrumb_iner_item">
+              <h2>Order Confirmation</h2>
+              <p>Home <span>></span> Order Confirmation</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb start-->
+ 
+
+
+  <!--================ confirmation part start =================-->
+  <section class="confirmation_part padding_top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="confirmation_tittle">
+            <span>Thank you. Your order has been received.</span>
+          </div>
+        </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="order_details_iner">
+            <h3>Order Details</h3>
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col" colspan="2">Order Date</th>
+                  <th scope="col">Tracking No</th>
+                  <th scope="col">Total Price</th>
+                  
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if orders %}
+                {% for order in orders %}
+                    <!-- Iterate over order details -->
+                    <tr>
+                        <th colspan="2"><span>{{ order.created_at }}</span></th>
+                        <th>{{ order.tracking_no }}</th>
+                        <th><span>{{ order.total_price }}</span></th>
+                        
+                        <th>
+                            <span>
+                                <a href="{% url 'orderview' order.tracking_no %}" class="btn btn-primary">
+                                    View <i class="fas fa-eye"></i>
+                                </a>
+                            </span>
+                        </th>
+                    </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6">No orders found</td>
+                </tr>
+            {% endif %}
+            
+            </tbody>
+            
+              <tfoot>
+              
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--================ confirmation part end =================-->
+  
+
+{% endblock %}
+
+{% block bottomlink %}
+
+  <script src="{% static 'assetUser/js/stellar.js' %}"></script>
+  <script src="{% static 'assetUser/js/price_rangs.js' %}"></script>
+
+{% endblock %} 

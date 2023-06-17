@@ -1,0 +1,141 @@
+{% extends 'user_home/base.html' %}
+{% load static %}
+
+{% block title %}
+Wishlist
+{% endblock %}
+
+
+{% block headlink %}
+  <!-- nice select CSS -->
+  <link rel="stylesheet" href="{% static 'assetUser/css/nice-select.css'%}">
+  <link rel="stylesheet" href="{% static 'assetUser/css/price_rangs.css'%}">
+  <!-- style CSS -->
+{% endblock %}
+
+{% block content%}
+{% include 'includes/navbar.html'%}
+
+  <!-- breadcrumb start-->
+ 
+  <section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+      <div class="row ">
+        <div class="col-lg-8">
+          <div class="breadcrumb_iner">
+            <div class="breadcrumb_iner_item">
+              <h2>My wishlist</h2>
+              <p><a href="{% url 'home' %}">Home </a><span>></span><a href = "{% url 'store'%}">Store</a><span>></span>wishlist</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb start-->
+  {% if wishlist_counter is 0%}
+  <h2 class="text-center mt-5 text-danger">Your Wishlist  is Empty <i class="fas fa-smile-wink"></i></h2>
+  {% else %}
+  
+  <!--================Cart Area =================-->
+
+  <section class="cart_area padding_top">
+    <div class="container">
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Action</th>
+                <th></th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in wishlistitems %}
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="d-flex">
+                      <img style="width:60px;height:60px;"src="{{item.product.product_image_set.first.image.url}}" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <p>{{item.product.product_name}}</p>
+                      
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <h5>₹{{item.product.price}}</h5>
+                </td>
+                
+                
+                
+               
+                <td>
+                
+                  <a style="font-size:22px; "class="mr-3" href="#" title = "Add to Cart"><i class="fa fa-cart-plus" aria-hidden="true"></i></a>
+                  <a style="font-size:22px; "class="mr-3" href="" title = "Add to Cart"> <i class="fa fa-eye" aria-hidden="true"></i></a>
+                  </td>
+                
+                <td>
+                
+                 
+                    
+                    </td>
+                    <td>
+                    
+                    <a style="font-size:20px; color:#ed1c2e;" data-index="{{item.product_id}}" class="deleteWishlistItem" href="" title="Remove item"><i class="fa fa-trash"></i></a>
+                      
+             
+                </td>
+                
+                
+              </tr>
+              {% endfor %}
+              
+             
+  {% endif %}
+
+{% endblock %}
+
+{% block bottomlink %}
+  <!-- jquery plugins here-->
+
+  <script src="{% static 'assetUser/js/stellar.js'%}"></script>
+  <script src="{% static 'assetUser/js/price_rangs.js'%}"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+  <script>
+    $(document).ready(function() {
+
+      $('.deleteWishlistItem').click(function (e){
+        e.preventDefault();
+    
+    
+        var product_id = $(this).data('index')
+    
+        $.ajax({
+          method : "POST",
+          url : "/wishlist/deleteWishlistItem/",
+          data : {
+              'product_id' : product_id,
+              csrfmiddlewaretoken : "{{csrf_token}}"
+          },
+          
+          success : function(response) {
+              console.log(response)
+              alertify.success(response.status)
+              window.location.reload()
+    
+          }
+      });
+    });
+    
+
+    });
+  </script>
+  
+  
+{% endblock %}

@@ -1,0 +1,324 @@
+{% extends 'user_home/base.html' %}
+{% load static %}
+
+
+{% block title %}
+Shop
+{% endblock %}
+
+
+{% block headlink %}
+    <!-- nice select CSS -->
+    <link rel="stylesheet" href="{% static 'assetUser/css/nice-select.css'%}">
+  
+    <link rel="stylesheet" href="{% static 'assetUser/css/price_rangs.css'%}">
+{% endblock %}
+{% block content %}
+
+
+
+    <!--::header part start::-->
+{% include 'includes/navbar.html' %}
+
+
+
+    <!--================Home Banner Area =================-->
+    <!-- breadcrumb start-->
+    <section class="breadcrumb breadcrumb_bg">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="breadcrumb_iner">
+                        <div class="breadcrumb_iner_item">
+                            <h2>Shop Category</h2>
+                            <p><a href = "{% url 'home' %}">Home </a><span>></span> {% if category_name %} {{category_name}} {% else %} Store {% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- breadcrumb start-->
+    
+
+    <!--================Category Product Area =================-->
+    <section class="cat_product_area section_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="left_sidebar_area">
+                        <aside class="left_widgets p_filter_widgets">
+                            <div class="l_w_title">
+                                <h3>Browse Categories</h3>
+                            </div>
+                            <div class="widgets_inner">
+                                <ul class="list">
+                                    <li>
+                                        <a href="/store/" >All</a>
+                                        <span>({{product_count }})</span>
+                                    </li>
+                                    {% for category in categories %}
+                                        <li>
+                                            <a href="/store/?categories={{ category.id }}" class="category-link" data-category-id="{{ category.id }}">
+                                                {{ category.category_name }}
+                                            </a>
+                                            <span>(<span id="category-count-{{ category.id }}">{{ category.product_count }}</span>)</span>
+                                        </li>
+                                    {% endfor %}
+
+                                   
+                                </ul>
+                            </div>
+                        </aside>
+                        {% comment %} <aside class="left_widgets p_filter_widgets">
+                            <div class="l_w_title">
+                                <h3>Price filters</h3>
+                            </div>
+                            <div class="widgets_inner">
+                                <ul class="list">
+                                    
+                                    {% for f_price in filter_prices %}
+                                    <li>
+                                        <a href="/store/?filter_price={{f_price.id}}" >{{f_price.price}}</a>
+                                        
+                                    </li>
+                                    {% endfor %}
+                                   
+                                </ul>
+                            </div>
+                        </aside> {% endcomment %}
+                        <aside class="left_widgets p_filter_widgets">
+                            <div class="l_w_title">
+                                <h3>Price filters</h3>
+                            </div>
+                            <div class="list-group list-group-flush">
+                                <li class="list-group-item">
+                                    <input type="range" id="rangeInput" value={{minMaxPrice.price__min}} min={{minMaxPrice.price__min}} max={{minMaxPrice.price__max}}  oninput="maxPrice.value=this.value"/>
+                                </li>
+                                <li class="list-group-item">
+                                    Max:<input type="number" value={{minMaxPrice.price__min}} min={{minMaxPrice.price__min}} max={{minMaxPrice.price__max}} id="maxPrice" onkeyup="rangeInput.value=this.value"/>
+                                    <button class="btn btn-info btn-sm mt-1">Filter</button>
+                                </li>
+                                
+                            </div>
+                        </aside>
+
+                        <aside class="left_widgets p_filter_widgets">
+                            <div class="l_w_title">
+                                <h3>Brand filters</h3>
+                            </div>
+                            <div class="widgets_inner">
+                                <ul class="list">
+                                    <li>
+                                        <a href="/store/">All Brands</a>
+                                    </li>
+                                    {% for i in brands%}
+                                    <li>
+                                        <a href="/store/?brand={{i.id}}">{{i.brand_name}}</a>
+                                    </li>
+                                    {% endfor %}
+                                   
+                                </ul>
+                               
+                            </div>
+                        </aside>
+
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="product_top_bar d-flex justify-content-between align-items-center">
+                                <div class="single_product_menu">
+                                    <p><span>{{p_count}} </span> Product Found</p>
+                                </div>
+                                <div class="single_product_menu d-flex">
+                                    <h5>Sort By:</h5>
+                                    <select onchange="window.location.href = '/store/?sort=' + this.value;">
+                                        <option  data-display="Select">-- Select --</option>
+                                        <option value="atoz">Name: A to Z</option>
+                                        <option value="ztoa">Name: Z to A</option>
+                                        <option value="ltoh">Price: Low to High</option>
+                                        <option value="htol">Price: High to Low</option>
+                                    </select>
+                                </div>
+                                
+                                
+                                
+                                <div class="single_product_menu d-flex">
+                                    <form method="GET" action="">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Search" name="search_query" placeholder="Search" {% if search_query%} value="{{ search_query }}" {% else %} Placeholder="Search" {%endif%}>
+                                            <div class="input-group-prepend">
+                                                <button type="submit" class="input-group-text"><i class="ti-search"></i></button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center latest_product_inner">
+                        {% for i in product %}
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="single_product_item">
+                                <a href="{% url 'productview' i.category.slug i.slug %}"><img src="{{i.product_image_set.first.image.url }}" alt=""></a>
+                                <div class="single_product_text">
+                                    <h4>{{i.product_name}}</h4>
+                                    <h3>{% if i.productattribute_set.first.offer %}₹<del>{{i.productattribute_set.first.price}} </del>{{i.productattribute_set.first.get_offer}}{% else %} ₹ <span class="product_price-{{i.id}}">{{i.productattribute_set.first.price}} </span> {% endif %}</h3>
+                                    <input type="hidden" value="1" class="form-control product-qty-{{i.id}}" id="productQty" />
+                                    <input type="hidden" class="product-image-{{i.id}}" value={{i.product_image_set.first.image}} />
+                                    <input type="hidden" class="product-id-{{i.id}}" value={{i.id}} />
+                                    
+                                    <input type="hidden" class="product-title-{{i.id}}" value={{i.product_name}} />
+                                    <a href="#" data-index="{{i.id}}" class="add_cart add-to-cart">+ add to cart<i class="fas fa-heart "></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="pageination">
+                                <nav aria-label="Page navigation example">
+                                    {% if product.has_other_pages %}
+                                    <ul class="pagination justify-content-center">
+                                        {% if product.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{product.previous_page_number}}" aria-label="Previous">
+                                                <i class="ti-angle-double-left"></i>
+                                            </a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Previous">
+                                                <i class="ti-angle-double-left"></i>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                        {% for i in product.paginator.page_range %}
+                                          {% if product.number == i %}
+                                             <li class="page-item active "><a class="page-link" href="#">{{i}}</a></li>
+                                          {% else %}
+                                             <li class="page-item"><a class="page-link" href="?page={{i}}">{{i}}</a></li>
+                                          {% endif %}
+                                        {% endfor %}
+
+                                        {% if product.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{product.next_page_number}}" aria-label="Next">
+                                                <i class="ti-angle-double-right"></i>
+                                            </a>
+                                        </li>
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" aria-label="Next">
+                                                <i class="ti-angle-double-right"></i>
+                                            </a>
+                                        </li>
+                                        {% endif %}
+
+                                    </ul>
+                                    {% endif %}
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!--================End Category Product Area =================-->
+
+    <!-- product_list part start-->
+
+    <!-- product_list part end-->
+{% include 'includes/footer.html' %}
+
+{% endblock %}
+    <!--::footer_part end::-->
+
+    <!-- jquery plugins here-->
+    {% block bottomlink %}
+    
+    <script src="{% static 'js/stellar.js' %}"></script>
+    <script src="{% static 'js/price_rangs.js' %}"></script>
+    <!-- custom js -->
+     
+    <script>
+        // Add an event listener to the category links and update the count
+        const categoryLinks = document.querySelectorAll('.category-link');
+        categoryLinks.forEach((link) => {
+            link.addEventListener('click', updateCategoryCount);
+        });
+    
+        // Function to update the category count
+        function updateCategoryCount() {
+            const categoryId = this.dataset.categoryId;
+            const countElement = document.querySelector(`#category-count-${categoryId}`);
+            const count = parseInt(countElement.innerText);
+            countElement.innerText = count + 1;
+        }
+        
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script>
+    $(document).ready(function () {
+        $("#maxPrice").on('blur', function(){
+            var _min=$(this).attr('min');
+            var _max=$(this).attr('max');
+            var _value=$(this).val();
+            console.log(_value,_max,_min);
+            if(_value < parseInt(_min) || _value > parseInt(_max)){
+                alert('Values should be '+_min+'-'+_max);
+                $(this).val(_min);
+                $(this).focus();
+                $("#rangeInput").val(_min);
+                return false;
+            }
+
+        });
+        $(document).on('click',".add-to-cart",function(){
+            var _vm=$(this);
+            var _index=_vm.attr('data-index');
+            var _qty=$(".product-qty-"+_index).val();
+            var _productId=$(".product-id"+_index).val(); 
+            var _productTitle=$(".product-title"+_index).val();
+            var _productImage=$(".product-image"+_index).val();
+            var _productPrice=$(".product_price"+_index).text();
+            console.log(_index,_qty,_productId,_productImage,_productTitle,_productPrice)
+  
+            //Ajax
+            $.ajax({
+                url:'/add-to-cart',
+                data:{
+                  'id':_productId,
+                  'image':_productImage,
+                  'qty':_qty,
+                  'title':_productTitle,
+                  'price':_productPrice
+                },
+                dataType:'json',
+                beforeSend:function(){
+                  _vm.attr('disabled',true);
+                },
+                success:function(res){
+                  console.log(res);
+                  $(".cart-list").text(res.totalitems);
+                  _vm.attr('disabled', false);
+                }
+            });
+  
+  
+          });
+
+
+    });
+    
+    </script>
+    {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>

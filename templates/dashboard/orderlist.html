@@ -1,0 +1,133 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block title %}
+Order Manager
+{% endblock %}
+{% block content %}
+
+<div class="pagetitle">
+    <h1>Orders</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'admin_home' %}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Order List</li>
+        </ol>
+    </nav>
+</div><!-- End Page Title -->
+
+{% if messages %}
+  {% for message in messages %}
+  <div class="text-center text-danger">
+  <i>{{ message }}</i>
+  </div>
+  {% endfor %}
+{% endif %}
+
+<div class="container">
+  <div class="row">
+    <div class="col-auto ms-auto pb-4">
+      <form class="search-form d-flex align-items-center" method="GET" action="">
+        <div class="input-group pt-2">
+          <input type="text" name="query" class="form-control" placeholder="Search" title="Enter search keyword" value="{{ query }}">
+          <button type="submit" class="btn btn-primary" title="Search Variants"><i class="bi bi-search"></i></button>
+        </div>
+        {% if query %}
+          <a class="mx-3" href="">
+            <button class="btn btn-danger text-light" type="button" title="Clear">Clear</button>
+          </a>
+        {% endif %}
+      </form>
+    </div>
+  </div>
+</div>
+
+<section class="section dashboard">
+  <div class="row">
+    <!-- Left side columns -->
+    <div class="col-lg-12">
+      <div class="row">
+        <!-- Recent Sales -->
+        <div class="col-12">
+          <div class="card recent-sales overflow-auto">
+            <div class="card-body">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">User</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Address</th>
+                    <th scope="col">Track No</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Payment Method</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in orderitems %}
+                    <tr>
+                      <td>{{ item.order.user }}</td>
+                      <td>
+                        <div style="width: 60px;" class="overflow-hidden">
+                          <img class="w-100" src="{{ item.product.product_image_set.first.image.url}}" alt="">
+                        </div>
+                      </td>
+                      <td>{{ item.price }}</td>
+                      <td>{{ item.quantity }}</td>
+                      <td>{{ item.order.user_address }}</td>
+                      <td>{{ item.order.tracking_no }}</td>
+                      <td>{{ item.order.total_price }}</td>
+                      <td>{{ item.order.payment_mode }}</td>
+                      <td class="status">{{ item.status }}</td>
+                      <td>
+                        <select class="form-select status-select" aria-label="Default select example" data-item-id="{{ item.id }}" onchange="updateOrderStatus(this)">
+                          {% for choice in item.ORDER_STATUS_CHOICES %}
+                            <option value="{{ choice.0 }}" {% if item.status == choice.0 %}selected{% endif %}>{{ choice.1 }}</option>
+                          {% endfor %}
+                        </select>
+                        <input type="hidden" class="initial-status" value="{{ item.status }}">
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div><!-- End Recent Sales -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script>
+  function updateOrderStatus(selectElement) {
+    var itemId = $(selectElement).data('item-id');
+    var selectedValue = $(selectElement).val();
+    var initialStatus = $(selectElement).siblings('.initial-status').val();
+
+    if (selectedValue !== initialStatus) {
+      $.ajax({
+        type: 'POST',
+        url: '{% url "update_order_status" %}',
+        data: {
+          'itemId': itemId,
+          'selectedValue': selectedValue
+        },
+        success: function(response) {
+          console.log(response);
+          if (response.success) {
+            $(selectElement).closest('tr').find('.status').text(response.status_display);
+            $(selectElement).siblings('.initial-status').val(selectedValue);
+          }
+        },
+        error: function(xhr, textStatus, error) {
+          console.log(xhr.statusText);
+        }
+      });
+    }
+  }
+</script>
+{% endblock %}

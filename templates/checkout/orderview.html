@@ -1,0 +1,222 @@
+{% extends 'user_home/base.html'%}
+{% load static %}
+{% block title %}
+Order View
+{% endblock %}
+{% block headlink %}
+  <link rel="stylesheet" href="{% static 'assetUser/css/price_rangs.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- style CSS -->
+{% endblock %}
+
+{% block content %}
+{% include 'includes/navbar.html' %}
+
+
+  <!--================Home Banner Area =================-->
+  <!-- breadcrumb start-->
+  <section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="breadcrumb_iner">
+            <div class="breadcrumb_iner_item">
+              <h2>Order Confirmation</h2>
+              <p><a href= "{% url 'home' %}"> Home </a><span>></span><a href= "{% url 'myOrders' %}"> My Orders </a><span>></span>Order View</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb start-->
+
+  <!--================ confirmation part start =================-->
+  <section class="confirmation_part padding_top">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="confirmation_tittle">
+            <span>Thank you. Your order has been received.</span>
+          </div>
+        </div>
+        
+        <div class="col-lg-6 col-lx-4">
+          <div class="single_confirmation_details">
+            <h4>Shipping Address</h4>
+            <ul>
+              <li>
+                <p>Name</p><span>: {{order.user_address.firstname}}</span>
+              </li>
+              <li>
+                  <p>Phone No</p><span>: {{order.user_address.contact_number}}</span>
+                </li>
+              <li>
+                  <p>Address</p><span>: {{order.user_address.address}}</span>
+                </li>
+                <li>
+                  <p>City</p><span>: {{order.user_address.city}}</span>
+                </li>
+                <li>
+                  <p>District</p><span>: {{order.user_address.district}}</span>
+                </li>
+              <li>
+                <p>State</p><span>: {{order.user_address.state}}</span>
+              </li>
+              <li>
+                <p>Country</p><span>: {{order.user_address.country}}</span>
+              </li>
+              <li>
+                <p>Postcode</p><span>: {{order.user_address.pincode}}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-6 col-lx-4">
+            <div class="single_confirmation_details">
+              <h4>order info</h4>
+              <ul>
+                <li>
+                  <p>Tracking No</p><span>: {{order.tracking_no}}</span>
+                </li>
+                <li>
+                  <p>Order Date</p><span>: {{order.created_at}}</span>
+                </li>
+                <li>
+                  <p>Total Amount</p><span>: {{order.total_price}}</span>
+                </li>
+                <li>
+                  <p>Payment Method</p><span>: {{order.payment_mode}}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="order_details_iner">
+            <h3>Order Details</h3>
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col" colspan="2">Name</th>
+                  <th scope="col">Quantity</th>
+                  <th scope="col">Price</th>
+                  <th scope="col">Image</th>
+                  
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in orderitems%}
+                <tr>
+                  <th colspan="2"><span>{{item.product.product_name}}</span></th>
+                  <th>{{item.quantity}}</th>
+                  <th> <span>{{item.price}}</span></th>
+                  <th>{% if item.product.product_image_set.exists %}
+                <img style="width:70px;heigth:70px" src="{{ item.product.product_image_set.first.image.url }}" alt="Product Image">
+            {% else %}
+                No Image Available
+            {% endif %}
+                  </th>
+                  <th>
+                    {% if item.status != 'Cancelled' %}
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#exampleModals{{ forloop.counter }}">
+                        Cancel
+                    </button>
+                    {% else %}
+                    Cancelled
+                    {% endif %}
+                    <!-- Modal for deleting the product -->
+                    <div class="modal fade cartdata" id="exampleModals{{ forloop.counter }}" tabindex="-1" aria-labelledby="exampleModalLabel{{ forloop.counter }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel{{ forloop.counter }}">Confirm Cancel</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Cancel Product {{ odritem.product.product_name }}
+                                </div>
+                                <div class="modal-footer">
+                                  {% csrf_token %}
+                                  <input type="hidden" class="order_id" value="{{ item.order.id }}">
+                                  <input type="hidden" class="orderitem_id" value="{{ item.id }}">
+                                    <button type="submit" class="btn btn-danger ordercancel">Confirm</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Deleting ended -->
+                </th>
+                {% if item.status != 'Cancelled' %}
+                <th>
+               
+
+                    <a href="{% url 'user_order_track' item.id %}" class="btn btn-outline-secondary" title="Track Status">Track order</a>
+                  
+                </th>
+                {% endif %}
+            
+               
+                {% endfor %}
+                
+                
+              <tfoot>
+                
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!--================ confirmation part end =================-->
+
+
+{% endblock %}
+
+{% block bottomlink %}
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+
+<script>
+  $(document).ready(function() {
+      $('.ordercancel').click(function(e) {
+        e.preventDefault();
+    
+        var order_ids = $(this).closest('.modal-content').find('.order_id').val();
+        var orderitem_ids = $(this).closest('.modal-content').find('.orderitem_id').val();
+        var token = $("[name='csrfmiddlewaretoken']").val();
+        console.log(order_ids,'daxo')
+        var modal = $(this).closest('.modal');
+        
+        $.ajax({
+          method: "POST",
+          url: "{% url 'ordercancel' %}",
+          data: {
+            'order_id': order_ids,
+            'orderitem_id': orderitem_ids,
+            csrfmiddlewaretoken: token
+          },
+          success: function(response) {
+            console.log(response);
+            alertify.success(response.status);
+    
+            location.reload();
+          },
+          error: function(xhr, status, error) {
+            console.log(xhr.responseText);
+            // Handle error case
+          }
+        });
+      });
+    });
+    
+</script>
+
+  <script src="{% static 'assetUser/js/stellar.js' %}"></script>
+  <script src="{% static 'assetUser/js/price_rangs.js' %}"></script>
+
+{% endblock %}

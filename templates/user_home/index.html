@@ -1,0 +1,159 @@
+{% extends 'user_home/base.html' %}
+{% load static %}
+
+
+{% block title %}
+Home
+{% endblock %}
+
+{% block content %}
+
+
+    <!--::header part start::-->
+{% include 'includes/navbar.html' %}
+    <!-- Header part end-->
+
+    <!-- banner part start-->
+   <!-- banner part start-->
+   <section class="banner_part">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-12">
+                <div class="banner_slider owl-carousel">
+                    {% for i in banners%}
+                    <div class="single_banner_slider bg-light">
+                        <div class="row">
+                            <div class="col-lg-5 col-md-8">
+                                <div class="banner_text pt-5">
+                                    <div class="banner_text_iner">
+                                        <h1>{{i.banner_name}}</h1>
+                                        <p>Incididunt ut labore et dolore magna aliqua quis ipsum
+                                            suspendisse ultrices gravida. Risus commodo viverra</p>
+                                        <a href="{% url 'store' %}" class="btn_2">buy now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="banner_img d-none d-lg-block">
+                                <img src="{{i.banner_image.url}}" alt="">
+                            </div>
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                        
+                 
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</section>
+<!-- banner part start-->
+
+    <!-- banner part start-->
+
+    <!-- feature_part start-->
+    <section class="feature_part padding_top">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="section_tittle text-center">
+                        <h2>Featured Category</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-between">
+                {% for category in categories %}
+               
+                <div class="col-lg-6 col-sm-6">
+                    <div class="single_feature_post_text">
+                        <p>Premium Quality</p>
+                        <h3>{{category.category_name}}</h3>
+                        <a href="{% url 'storeview' category.slug %}" class="feature_btn">EXPLORE NOW <i class="fas fa-play"></i></a>
+                        <img src="{{category.cat_image.url}}" style="width:250px;height:250px" alt="">
+                    </div>
+                </div>
+                
+                {%endfor%}
+               
+                
+    
+    <!-- upcoming_event part start-->
+
+    <!-- product_list start-->
+    <section class="product_list section_padding">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="section_tittle text-center">
+                        <h2>Best Sellers</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="product_list_slider owl-carousel">
+                        <div class="single_product_list_slider">
+                            <div class="row align-items-center justify-content-between">
+                                {% for i in products %}
+                                <div class="col-lg-3 col-sm-6">
+                                    <div class="single_product_item">
+                                        <a href="{% url 'productview' i.category.slug i.slug %}"><img src="{{i.product_image_set.first.image.url }}" alt=""></a>
+                                        <div class="single_product_text">
+                                            <h4>{{i.product_name}}</h4>
+                                            <h3>{% if i.productattribute_set.first.offer %}₹<del>{{i.productattribute_set.first.price}} </del>{{i.productattribute_set.first.get_offer}}{% else %} ₹ {{i.productattribute_set.first.price}}  {% endif %}</h3>
+                                            <a href="#" class="add_cart">+ add to cart<i class="ti-heart"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                             
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- product_list part start-->
+
+   
+
+    <!-- product_list part start-->
+    <section class="product_list best_seller section_padding">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-12">
+                    <div class="section_tittle text-center">
+                        <h2>Premium Brands</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row align-items-center justify-content-between">
+                <div class="col-lg-12">
+                    <div class="best_product_slider owl-carousel">
+                        {% for brand in brands %}
+                        <div class="single_product_item">
+                            <img src="{{brand.brand_image.url}}" style="width:180px;height:120px" alt="">
+                            <div class="single_product_text">
+                                
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- product_list part end-->
+
+   
+
+    <!--::footer::-->
+    {% include 'includes/footer.html' %}
+    <!--::footer::-->
+
+    
+
+{% endblock %}

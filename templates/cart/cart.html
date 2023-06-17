@@ -1,0 +1,399 @@
+{% extends 'user_home/base.html' %}
+{% load static %}
+{% load mathfilters %}
+
+{% block title %}
+Cart
+{% endblock %}
+
+
+{% block headlink %}
+  <!-- nice select CSS -->
+  <link rel="stylesheet" href="{% static 'assetUser/css/nice-select.css'%}">
+  <link rel="stylesheet" href="{% static 'assetUser/css/price_rangs.css'%}">
+  <!-- style CSS -->
+{% endblock %}
+
+{% block content%}
+{% include 'includes/navbar.html'%}
+
+  <!-- breadcrumb start-->
+  {% if totalitems is 0%}
+  <h2 class="text-center  text-danger"style="margin-top:300px;">  Your Cart is Empty <i class="fas fa-smile-wink"></i></h2>
+  {% else %}
+  <section class="breadcrumb breadcrumb_bg">
+    <div class="container">
+      <div class="row ">
+        <div class="col-lg-8">
+          <div class="breadcrumb_iner">
+            <div class="breadcrumb_iner_item">
+              <h2>Cart Products</h2>
+              <p><a href="{% url 'home' %}">Home </a><span>></span><a href = "{% url 'store'%}">Store</a><span>></span>Cart Products</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- breadcrumb start-->
+  
+  <!--================Cart Area =================-->
+
+  <section class="cart_area padding_top" id="cartList">
+    <div class="container">
+      <div class="cart_inner">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Product</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total</th>
+                <th scope="col">Action</th>
+                <th scope="col">Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in cartitem %}
+              <tr>
+                <td>
+                  <div class="media">
+                    <div class="d-flex">
+                      <img style="width:60px;height:60px;"src="{{item.product.product_image_set.first.image.url}}" alt="" />
+                    </div>
+                    <div class="media-body">
+                      <p>{{item.product.product_name}}</p>
+                      <p>{{item.variant.size}}</p>
+                      <p>{{item.variant.ram}}</p>
+                    
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <h5>₹{% if item.variant.offer %}{{item.variant.get_offer}}{% else %}{{item.variant.price}}{% endif %}</h5>
+                </td>
+                <td>
+                  
+                   <div class="product_count product_data">
+                    <input type = "hidden" value = "{{item.product_id}}" class= "prod_id">
+                    {% csrf_token %}
+                    <span class="input-number-decrement btn-minus changeQuantity" data-index="{{item.id}}"> <i class="ti-angle-down"></i></span>
+                    <input class="qty-input" type="text" value="{{item.product_quantity}}" name = "quantity" id="qty-input" min="0" max="10">
+                    <span class="input-number-increment btn-plus changeQuantity" data-index="{{item.id}}"> <i class="ti-angle-up"></i></span>
+                  </div> 
+                
+                  {% comment %} <div class="input-group quantity " style="width: 100px;">
+
+                    <div class="input-group-btn">
+                        <button  data-index="{{item.product_id}}" class="btn btn-sm btn-primary changeQuantity" >
+                            <i class="fa fa-minus"></i>
+                        </button>
+                    </div>
+
+                    <input readonly id="pro_qty{{item.product_id}}" type="text" class="form-control form-control-sm  text-center" name="quantity" value="{{item.qty}}">
+
+                    <div class="input-group-btn">
+                        <button data-index="{{item.product.id}}" class="btn btn-sm btn-primary btn-plus changeQuantity">
+                            <i class="fa fa-plus"></i>
+                        </button>
+                    </div>
+                  
+
+                </div> {% endcomment %}
+
+
+                </td>
+                <td>
+                  <h5>₹
+                   
+                    {% if item.variant.offer %}{{item.variant.get_offer | mul:item.product_quantity}}{% else %}{{item.variant.price |mul:item.product_quantity }}{% endif %}
+                    
+                  </h5>
+                </td>
+                
+                
+                <td>
+                  <div>
+                 
+                    <a style="font-size:22px; "class="mr-3" href="#" title = "Add to wishlist"><i class="fa fa-heart"></i></a>
+                    </td><td>
+                    
+                    <a style="font-size:20px; color:#ed1c2e;" data-index="{{item.id}}" class="deleteCartItem" href="" title="Remove item"><i class="fa fa-trash"></i></a>
+                      
+                  </div>
+                </td>
+                
+                
+              </tr>
+              {% endfor %}
+              
+              <tr class="bottom_button">
+                
+                
+              
+                
+                <td>
+                  {% comment %} <div class="cupon_text float-right">
+                    <a class="btn_1" href="#">Close Coupon</a>
+                  </div> {% endcomment %}
+                  <a class="btn_1 " style="width:200px;" href="">Update Cart</a>
+                </td>
+                <td></td>
+                <td></td>
+                <td>
+                 
+                </td>
+                
+                <td></td>
+                
+                
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                
+                <td>
+                  <h5>Subtotal</h5>
+                </td>
+                <td></td>
+                <td>
+                  <h5>₹{{subtotal}}</h5>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                
+                <td>
+                  <h5>Tax</h5>
+                </td>
+                <td></td>
+                <td>
+                  <h5>₹{{tax}}</h5>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                
+                <td>
+                  <h5>Shipping Charge</h5>
+                </td>
+                <td></td>
+                <td>
+                  <h5>₹70</h5>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                
+                <td>
+                  <h5>Grand Total</h5>
+                </td>
+                <td></td>
+                <td>
+                  <h5>₹{{grandtotal}}</h5>
+                </td>
+              </tr>
+              {% comment %} <tr class="shipping_area">
+                <td></td>
+                <td></td>
+                
+                <td>
+                  <h5>Shipping</h5>
+                </td>
+                <td></td>
+                <td>
+                  <div class="shipping_box">
+                    <ul class="list">
+                      <li>
+                        <a href="#">Flat Rate: $5.00</a>
+                      </li>
+                      <li>
+                        <a href="#">Free Shipping</a>
+                      </li>
+                      <li>
+                        <a href="#">Flat Rate: $10.00</a>
+                      </li>
+                      <li class="active">
+                        <a href="#">Local Delivery: $2.00</a>
+                      </li>
+                    </ul>
+                    <h6>
+                      Calculate Shipping
+                      <i class="fa fa-caret-down" aria-hidden="true"></i>
+                    </h6>
+                    <select class="shipping_select">
+                      <option value="1">Bangladesh</option>
+                      <option value="2">India</option>
+                      <option value="4">Pakistan</option>
+                    </select>
+                    <select class="shipping_select section_bg">
+                      <option value="1">Select a State</option>
+                      <option value="2">Select a State</option>
+                      <option value="4">Select a State</option>
+                    </select>
+                    <input type="text" placeholder="Postcode/Zipcode" />
+                    <a class="btn_1" href="#">Update Details</a>
+                  </div>
+                </td>
+              </tr> {% endcomment %}
+            </tbody>
+          </table>
+          <div class="checkout_btn_inner float-right">
+            <a class="btn_1 mb-4" href="{% url 'store' %}">Continue Shopping</a>
+            <a class="btn_1 checkout_btn_1 mb-4" href="{% url 'checkout' %}">Proceed to checkout</a>
+          </div>
+        </div>
+      </div>
+  </section>
+  <!--================End Cart Area =================-->
+
+  {% endif %}
+
+{% endblock %}
+
+{% block bottomlink %}
+  <!-- jquery plugins here-->
+
+  <script src="{% static 'assetUser/js/stellar.js'%}"></script>
+  <script src="{% static 'assetUser/js/price_rangs.js'%}"></script>
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+
+<script>
+$('.btn-plus').click(function (e) {
+          e.preventDefault();
+  
+          var inc_value = $(this).closest('.product_data').find('.qty-input').val();
+          var value = parseInt(inc_value,10);
+          value = isNaN(value) ? 0 : value;
+          if(value < 10)
+          {
+              value++;
+              console.log(value)
+              $(this).closest('.product_data').find('.qty-input').val(value);
+          }
+
+  });
+
+  $('.btn-minus').click(function (e) {
+          
+    e.preventDefault();
+    
+    var dec_value = $(this).closest('.product_data').find('.qty-input').val();
+    var value = parseInt(dec_value,10);
+    value = isNaN(value) ? 0 : value;
+    if(value > 1)
+    {
+        value--;
+        console.log(value)
+        $(this).closest('.product_data').find('.qty-input').val(value);
+    }
+});
+
+
+{% comment %} $('.quantity button').on('click', function () {
+  var button = $(this);
+  var oldValue = button.parent().parent().find('input').val();
+  if (button.hasClass('btn-plus')) {
+      var newVal = parseFloat(oldValue) + 1;
+  } else {
+      if (oldValue > 1) {
+          var newVal = parseFloat(oldValue) - 1;
+
+      } else {
+          newVal = 1;
+      }
+  }
+  button.parent().parent().find('input').val(newVal);
+});  {% endcomment %}
+
+  $('.deleteCartItem').click(function (e){
+    e.preventDefault();
+
+
+    var item_id = $(this).data('index')
+    var _vm=$(this)
+    console.log(item_id)
+    
+
+    $.ajax({
+      
+      url : "/add-to-cart/delete-from-cart/",
+      data : {
+          'item_id' : item_id,
+          
+      },
+      dataType:'json',
+      beforeSend:function(){
+            _vm.attr('disabled',true);
+          },
+      
+      
+      success : function(response) {
+          $(".cart-list").text(response.totalitems);
+          _vm.attr('disabled',false);
+         
+          console.log(response)
+          alertify.success(response.status)
+          window.location.reload()
+          
+          
+
+      }
+  });
+});
+
+  $('.changeQuantity').click(function (e) {
+    e.preventDefault();
+
+    var item_id = $(this).data('index')
+    var proqty=$("#qty-input").val();
+    var _vm=$(this)
+
+
+
+
+    console.log('work: ',proqty,' of id = ',item_id)
+    
+    $.ajax({
+        
+        url : "/add-to-cart/update-cart/",
+        data : {
+            'item_id' : item_id,
+            'item_qty' : proqty,
+            
+        },
+
+        dataType:'json',
+        beforeSend:function(){
+            _vm.attr('disabled',true);
+          },
+      
+      
+        success : function(response) {
+           
+           _vm.attr('disabled',false);
+           
+           
+           alertify.success(response.status)
+          
+
+      }
+    });
+
+  });
+
+</script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+ <script>
+  {% for msg in messages %}
+  swal('{{msg}}');
+  {% endfor %}
+ </script>
+
+  
+{% endblock %}
