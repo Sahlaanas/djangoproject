@@ -179,7 +179,8 @@ def deleteCartItem(request):
             if 'cartdata' in request.session:
                   if p_id in request.session['cartdata']:
                         cart_data=request.session['cartdata']
-                        del request.session['cartdata'][p_id]
+                        s= request.session['cartdata'][p_id]
+                        s.delete()
                         request.session['cartdata']=cart_data
                         
             total_amt=0

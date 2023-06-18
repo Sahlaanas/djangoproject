@@ -51,10 +51,10 @@ def createproduct(request):
         # Validation
         if Product.objects.filter(product_name=name).exists():
             messages.error(request, 'Product name already exists')
-            return redirect('product_list')
+            return redirect('productlist')
         if name == '' or price == '':
             messages.error(request, "Name or Price field is empty")
-            return redirect('product_list')
+            return redirect('productlist')
         
         categorys = Category.objects.get(id=category_id) 
         Brands = Brand.objects.get(brand_name=brand_name)

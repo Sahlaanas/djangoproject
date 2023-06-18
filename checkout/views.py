@@ -110,10 +110,11 @@ def placeorder(request):
 
         grandtotal = subtotal + tax + 50
         
-        
         if (payment_mod.method == "Wallet"):
-            wallet = Wallet.objects.get(user = request.user)
-            
+            try:
+                wallet = Wallet.objects.get(user=request.user)
+            except Wallet.DoesNotExist:
+                wallet = Wallet.objects.create(user=request.user, wallet=0)
             
             if wallet.wallet >= grandtotal:
                 wallet.wallet = wallet.wallet-grandtotal
